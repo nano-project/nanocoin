@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# PROVIDE: NanoCoin
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# NanoCoin_enable (bool): Set to NO by default. Set this variable to YES if you want to enable NanoCoin service.
+# NanoCoin_config (path): Set to /usr/local/etc/NanoCoin.conf by default.
+# NanoCoin_user:  The user account NanoCoin daemon runs as. It uses 'root' user by default.
+# NanoCoin_group: The group account NanoCoin daemon runs as. It uses 'wheel' group by default.
+# NanoCoin_datadir (str): Default to "/var/db/NanoCoin". Base data directory.
+
+. /etc/rc.subr
+
+name=NanoCoin
+rcvar=NanoCoin_enable
+
+: ${NanoCoin_enable:=NO}
+: ${NanoCoin_config=/usr/local/etc/NanoCoin.conf}
+: ${NanoCoin_datadir=/var/db/NanoCoin}
+: ${NanoCoin_user="root"}
+: ${NanoCoin_group="wheel"}
+
+required_files=${NanoCoin_config}
+command=/usr/local/bin/nanocoind
+NanoCoin_chdir=${NanoCoin_datadir}
+pidfile="${NanoCoin_datadir}/nanocoind.pid"
+stop_cmd=NanoCoin_stop
+command_args="-conf=${NanoCoin_config} -datadir=${NanoCoin_datadir} -daemon -pid=${pidfile}"
+start_precmd="${name}_prestart"
+
+NanoCoin_create_datadir()
+{
+	echo "Creating data directory"
+	eval mkdir -p ${NanoCoin_datadir}
+	[ $? -eq 0 ] && chown -R ${NanoCoin_user}:${NanoCoin_group} ${NanoCoin_datadir}
+}
+
+NanoCoin_prestart()
+{
+	if [ ! -d "${NanoCoin_datadir}/." ]; then
+		NanoCoin_create_datadir || return 1
+	fi
+}
+
+NanoCoin_requirepidfile()
+{
+	if [ ! "0`check_pidfile ${pidfile} ${command}`" -gt 1 ]; then
+		echo "${name} not running? (check $pidfile)."
+		exit 1
+	fi
+}
+
+NanoCoin_stop()
+{
+    NanoCoin_requirepidfile
+
+	echo "Stopping ${name}."
+	eval ${command} -conf=${NanoCoin_config} -datadir=${NanoCoin_datadir} stop
+	wait_for_pids ${rc_pid}
+}
+
+load_rc_config $name
+run_rc_command "$1"

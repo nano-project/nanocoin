@@ -1,0 +1,11 @@
+[Unit]
+Description=NanoCoin daemon serivce
+After=network.target
+
+[Service]
+Type=simple
+User=NanoCoin
+ExecStart=/opt/NanoCoin/nanocoind
+
+[Install]
+WantedBy=multi-user.target

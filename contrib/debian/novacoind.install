@@ -1,0 +1,2 @@
+debian/bin/nanocoin usr/bin
+src/nanocoin usr/lib/NanoCoin

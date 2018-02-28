@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=NanoCoin
+Comment=NanoCoin P2P Cryptocurrency
+Comment[ru]=NanoCoin, P2P криптовалюта
+Comment[fr]=NanoCoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=NanoCoin, eşten eşe kriptografik sanal para birimi
+Exec=/usr/bin/NanoCoin-qt
+Terminal=false
+Type=Application
+Icon=/usr/share/pixmaps/NanoCoin80.xpm
+MimeType=x-scheme-handler/NanoCoin;
+Categories=Office;
